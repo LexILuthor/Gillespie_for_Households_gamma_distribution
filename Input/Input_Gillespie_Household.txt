@@ -1,0 +1,10 @@
+NumberOfSteps: 1000000000
+number_of_Households: 20000000
+people_in_one_Household: 3
+Beta_1: 1.13636363
+Beta_2: 0.216
+threshold_above_which_we_change_from_beta1_to_beta2: 3.14
+threshold_under_which_we_change_from_beta2_to_beta1: 1.2
+BetaH: 2.27272727
+Ny: 0.21
+Gamma: 0.45
