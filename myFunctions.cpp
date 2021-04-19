@@ -185,10 +185,24 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
+void initialize_Households(std::vector<std::vector<int> > households, int nh,
+                           int number_of_exposed_compartments) {
+    //first household will have one infected,the others none
+    households[0][0] = nh - 1;
+    households[0][number_of_exposed_compartments + 1] = 1;
+    for (int i = 1; i < households.size(); i++) {
+        households[i][0] = nh;
+    }
+
+
+}
+
+
 void read_Parameters_From_File(std::string inputpath, int &nSteps, int &number_of_Households,
                                int &number_of_people_in_one_Household, double &beta1, double &beta2,
                                double &threshold_above_which_one_to_two, double &threshold_under_which_two_to_one,
-                               double &betaH, double &ny, double &gamma) {
+                               double &betaH, double &ny, double &gamma, int &number_of_infected_compartments,
+                               int &number_of_exposed_compartments) {
 
     std::string line;
     std::ifstream infile(inputpath);
@@ -246,6 +260,17 @@ void read_Parameters_From_File(std::string inputpath, int &nSteps, int &number_o
         getline(infile, line, ':');
         getline(infile, line);
         gamma = std::stod(line);
+
+        //number_of_infected_compartments
+        getline(infile, line, ':');
+        getline(infile, line);
+        number_of_infected_compartments = std::stod(line);
+
+
+        //number_of_exposed_compartments
+        getline(infile, line, ':');
+        getline(infile, line);
+        number_of_exposed_compartments = std::stod(line);
 
         infile.close();
     } else std::cout << "Unable to open file";

@@ -22,7 +22,7 @@ int main() {
     //S->E the initial beta
     double beta1;
 
-    //S->E after the lockdown (automatically actived when a certain % of the population is recovered)
+    //S->E after the lockdown (automatically activated when a certain % of the population is recovered)
     double beta2;
 
     //the % above which the general contacts happens at ratio beta2
@@ -40,15 +40,21 @@ int main() {
     // I->R
     double gamma;
 
+
+    int number_of_infected_compartments;
+
+    int number_of_exposed_compartments;
+
     int tot_simulations = 100;
 
 
     read_Parameters_From_File(inputpath, nSteps, number_of_Households, number_of_people_in_one_Household, beta1, beta2,
                               threshold_above_which_one_to_two, threshold_under_which_two_to_one,
-                              betaH, ny, gamma);
+                              betaH, ny, gamma, number_of_infected_compartments,
+                              number_of_exposed_compartments);
 
     if (beta1 != beta2) {
-        outputpath = "../InputOutput/gillespie_Household_lockdown";
+        outputpath = "../Output/gillespie_Household_lockdown";
     }
 
     int N = number_of_Households * number_of_people_in_one_Household;
@@ -64,7 +70,9 @@ int main() {
                                                                        number_of_people_in_one_Household, beta1, beta2,
                                                                        threshold_above_which_one_to_two,
                                                                        threshold_under_which_two_to_one, betaH, ny,
-                                                                       gamma, tempo, time_lockdown);
+                                                                       gamma, number_of_infected_compartments,
+                                                                       number_of_exposed_compartments, tempo,
+                                                                       time_lockdown);
 
         if (beta1 != beta2) {
             write_lock_down_files(outputpath + std::to_string(i) + "lock_down_time" + ".txt", time_lockdown);
