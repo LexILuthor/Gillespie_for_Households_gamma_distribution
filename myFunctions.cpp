@@ -2,16 +2,16 @@
 // Created by popcorn on 18/04/2021.
 //
 
-//
-// Created by popcorn on 01/01/2021.
-//
-
 
 #include <iostream>
 #include <vector>
 #include <fstream>
 #include <random>
+#include <map>
+#include<tuple>
 #include "myFunctions.h"
+
+
 
 
 void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
@@ -185,13 +185,17 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
-void initialize_Households(std::vector<std::vector<int> > households, int nh,
-                           int number_of_exposed_compartments) {
+void initialize_Households(std::vector<std::vector<int> > households, int nh, int number_of_exposed_compartments,
+                           std::map<std::tuple<int, int, int>, std::vector<int> > states_to_households) {
     //first household will have one infected,the others none
     households[0][0] = nh - 1;
+    states_to_households[std::make_tuple(nh - 1, 0, 1)] = std::vector<int>(1, 0);
+    states_to_households[std::make_tuple(nh , 0, 0)] = std::vector<int>(0);
+
     households[0][number_of_exposed_compartments + 1] = 1;
     for (int i = 1; i < households.size(); i++) {
         households[i][0] = nh;
+        states_to_households[std::make_tuple(nh , 0, 0)].push_back(i);
     }
 
 

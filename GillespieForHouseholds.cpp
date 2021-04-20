@@ -2,15 +2,14 @@
 // Created by popcorn on 18/04/2021.
 //
 
-//
-// Created by popcorn on 01/01/2021.
-//
 
 #include <iostream>
 #include <vector>
 #include<cstdlib>
 #include <random>
 #include <time.h>
+#include <map>
+#include<tuple>
 #include "myFunctions.h"
 #include "GillespieForHouseholds.h"
 
@@ -29,8 +28,11 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
     std::vector<std::vector<int> > households(number_of_Households, std::vector<int>(
             1 + number_of_exposed_compartments + number_of_infected_compartments, 0));
 
+    // map that connects each possible state (s,e,i,r) with the households that are in that state
+    std::map<std::tuple <int, int, int> ,std::vector<int> > states_to_households;
 
-    initialize_Households(households, number_of_people_in_one_Household,number_of_exposed_compartments);
+
+    initialize_Households(households, number_of_people_in_one_Household,number_of_exposed_compartments,states_to_households);
 
     std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
     double move = (double) 1 / N;

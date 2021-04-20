@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 #include "myFunctions.h"
 #include "GillespieForHouseholds.h"
 
