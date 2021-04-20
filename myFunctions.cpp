@@ -9,7 +9,7 @@
 #include <random>
 #include <map>
 #include<tuple>
-#include "myFunctons.h"
+#include "myFunctions.h"
 
 
 
