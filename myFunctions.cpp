@@ -9,9 +9,8 @@
 #include <random>
 #include <map>
 #include<tuple>
+#include <math.h>
 #include "myFunctions.h"
-
-
 
 
 void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
@@ -96,11 +95,10 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
 
 void new_Infected(std::vector<std::vector<int> > &SEIR,
                   std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                  int &sumsHiH, int &j) {
-    SEIR[0].push_back(SEIR[0][j - 1]);
-    SEIR[1].push_back(SEIR[1][j - 1] - 1);
-    SEIR[2].push_back(SEIR[2][j - 1] + 1);
-    SEIR[3].push_back(SEIR[3][j - 1]);
+                  int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
+                  std::vector<std::vector<int> > &households, int number_of_infected_compartments,
+                  int number_of_exposed_compartments, int &j) {
+
 
     //update households with susceptible based only on how many exposed an house has
     //update also sumsHiH
@@ -118,13 +116,64 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
             for (int s = 0; s < size - (e + i); s++) {
                 cumulativeSum = cumulativeSum + (household_with_Susceptible_Infected_Exposed[s][i][e] * e);
                 if (randomUnif <= cumulativeSum) {
-                    //allora abbiamo estratto il numero (s, i,e)
-                    household_with_Susceptible_Infected_Exposed[s][i][e]--;
-                    household_with_Susceptible_Infected_Exposed[s][i + 1][e - 1]++;
+                    //allora abbiamo estratto il numero (s, i, e)
 
-                    // this is the rewrite of:
-                    // sumsHiH = sumsHiH - (s * i) + (s * (i+1) )
-                    sumsHiH = sumsHiH + s;
+                    //move exposed
+                    std::tuple<int, int, int> extracted_tuple = std::make_tuple(s, i, e);
+                    std::vector<int> possible_households = states_to_households[extracted_tuple];
+
+                    // we know there are e*household_with_Susceptible_Infected_Exposed[s][e][i] exposed individuals
+                    int random_int = rand() % possible_households.size();
+                    int choosed_household = possible_households[random_int];
+
+
+                    int cumsum = 0;
+                    double random_compartment = generateUnif_from_zeroExcluded_to(e);
+                    for (int z = 1; z < 1 + number_of_exposed_compartments; z++) {
+                        cumsum = cumsum + households[choosed_household][z];
+                        if (cumsum >= randomUnif) {
+                            //the compartment in which the change will happen is z
+                            households[choosed_household][z]--;
+                            households[choosed_household][z + 1]++;
+                            if (z < number_of_exposed_compartments) {
+                                // we just have a move from one exposed compartment to another
+                                SEIR[0].push_back(SEIR[0][j - 1]);
+                                SEIR[1].push_back(SEIR[1][j - 1]);
+                                SEIR[2].push_back(SEIR[2][j - 1]);
+                                SEIR[3].push_back(SEIR[3][j - 1]);
+
+                            } else {
+                                //we have a new infected
+
+                                SEIR[0].push_back(SEIR[0][j - 1]);
+                                SEIR[1].push_back(SEIR[1][j - 1] - 1);
+                                SEIR[2].push_back(SEIR[2][j - 1] + 1);
+                                SEIR[3].push_back(SEIR[3][j - 1]);
+
+                                household_with_Susceptible_Infected_Exposed[s][i][e]--;
+                                household_with_Susceptible_Infected_Exposed[s][i + 1][e - 1]++;
+
+                                // this is the rewrite of:
+                                // sumsHiH = sumsHiH - (s * i) + (s * (i+1) )
+                                sumsHiH = sumsHiH + s;
+
+                                // we move the chosen_household
+                                //---------------------------------------------------------------------------------------------------------
+                                //check if the key (s, e - 1, i + 1) exist
+                                states_to_households[std::make_tuple(s, e - 1, i + 1)].push_back(choosed_household);
+                                //---------------------------------------------------------------------------------------
+                                states_to_households[extracted_tuple].erase(
+                                        states_to_households[extracted_tuple].begin() + random_int);
+
+
+                            }
+
+                            break;
+                        }
+
+                    }
+
+
                     goto skip;
 
                 }
@@ -134,9 +183,12 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
     skip:;
 }
 
+
 void new_Recovered(std::vector<std::vector<int> > &SEIR,
                    std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                   int &sumsHiH, int &j) {
+                   int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
+                   std::vector<std::vector<int> > &households, int number_of_infected_compartments,
+                   int number_of_exposed_compartments, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1]);
     SEIR[1].push_back(SEIR[1][j - 1]);
     SEIR[2].push_back(SEIR[2][j - 1] - 1);
@@ -190,12 +242,12 @@ void initialize_Households(std::vector<std::vector<int> > households, int nh, in
     //first household will have one infected,the others none
     households[0][0] = nh - 1;
     states_to_households[std::make_tuple(nh - 1, 0, 1)] = std::vector<int>(1, 0);
-    states_to_households[std::make_tuple(nh , 0, 0)] = std::vector<int>(0);
+    states_to_households[std::make_tuple(nh, 0, 0)] = std::vector<int>(0);
 
     households[0][number_of_exposed_compartments + 1] = 1;
     for (int i = 1; i < households.size(); i++) {
         households[i][0] = nh;
-        states_to_households[std::make_tuple(nh , 0, 0)].push_back(i);
+        states_to_households[std::make_tuple(nh, 0, 0)].push_back(i);
     }
 
 

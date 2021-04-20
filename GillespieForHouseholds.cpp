@@ -29,10 +29,10 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
             1 + number_of_exposed_compartments + number_of_infected_compartments, 0));
 
     // map that connects each possible state (s,e,i,r) with the households that are in that state
-    std::map<std::tuple <int, int, int> ,std::vector<int> > states_to_households;
+    std::map<std::tuple<int, int, int>, std::vector<int> > states_to_households;
 
-
-    initialize_Households(households, number_of_people_in_one_Household,number_of_exposed_compartments,states_to_households);
+    initialize_Households(households, number_of_people_in_one_Household, number_of_exposed_compartments,
+                          states_to_households);
 
     std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
     double move = (double) 1 / N;
@@ -125,10 +125,12 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
             new_exposed_inside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, j);
         } else if (tmp < (se + seH + ei)) {
             //new infected
-            new_Infected(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, j);
+            new_Infected(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, states_to_households, households,
+                         number_of_infected_compartments, number_of_exposed_compartments, j);
         } else {
             //new Recovered
-            new_Recovered(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, j);
+            new_Recovered(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, states_to_households, households,
+                          number_of_infected_compartments, number_of_exposed_compartments, j);
         }
         j++;
     }
