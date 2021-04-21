@@ -119,7 +119,9 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
         double tmp = rand() / ((double) RAND_MAX + 1);
         if (tmp < se) {
             //new Exposed from a contact outside the household
-            new_Exposed_outside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, j);
+            new_Exposed_outside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,
+                                              states_to_households, households,
+                                              number_of_infected_compartments, number_of_exposed_compartments, j);
         } else if (tmp < (se + seH)) {
             //new Exposed from a contact within the household
             new_exposed_inside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,
