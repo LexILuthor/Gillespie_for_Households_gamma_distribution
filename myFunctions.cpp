@@ -71,12 +71,10 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                                 choosed_household);
 
 
-                        states_to_households[extracted_tuple].erase(
-                                states_to_households[extracted_tuple].begin() + random_int);
-
 
                     }
-
+                    states_to_households[extracted_tuple].erase(
+                            states_to_households[extracted_tuple].begin() + random_int);
 
                     //--------------------------------------------------------------------------------------------------
 
@@ -140,21 +138,22 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
                     // we move the chosen_household
                     //check if the key (s, e - 1, i + 1) exist
                     std::map<std::tuple<int, int, int>, std::vector<int> >::iterator it;
-                    it = states_to_households.find(std::make_tuple(s-1, e + 1, i ));
+                    it = states_to_households.find(std::make_tuple(s - 1, e + 1, i));
                     if (it != states_to_households.end())
-                        states_to_households[std::make_tuple(s-1, e + 1, i )].push_back(
+                        states_to_households[std::make_tuple(s - 1, e + 1, i)].push_back(
                                 choosed_household);
                     else {
-                        states_to_households[std::make_tuple(s-1, e + 1, i )] = std::vector<int>(0);
-                        states_to_households[std::make_tuple(s-1, e + 1, i )].push_back(
+                        states_to_households[std::make_tuple(s - 1, e + 1, i)] = std::vector<int>(0);
+                        states_to_households[std::make_tuple(s - 1, e + 1, i)].push_back(
                                 choosed_household);
 
 
-                        states_to_households[extracted_tuple].erase(
-                                states_to_households[extracted_tuple].begin() + random_int);
+
 
 
                     }
+                    states_to_households[extracted_tuple].erase(
+                            states_to_households[extracted_tuple].begin() + random_int);
 
 
                     //--------------------------------------------------------------------------------------------------
@@ -205,7 +204,6 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
                     int choosed_household = possible_households[random_int];
 
 
-
                     int cumsum = 0;
                     double random_compartment = generateUnif_from_zeroExcluded_to(e);
                     for (int z = 1; z < 1 + number_of_exposed_compartments; z++) {
@@ -249,11 +247,9 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
                                             choosed_household);
 
 
-                                    states_to_households[extracted_tuple].erase(
-                                            states_to_households[extracted_tuple].begin() + random_int);
-
-
                                 }
+                                states_to_households[extracted_tuple].erase(
+                                        states_to_households[extracted_tuple].begin() + random_int);
                             }
                             break;
                         }
@@ -313,29 +309,24 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                     std::vector<int> possible_households = states_to_households[extracted_tuple];
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
-                    households[choosed_household][number_of_exposed_compartments+1]--;
-                    households[choosed_household][-1]++;
+                    households[choosed_household][number_of_exposed_compartments + 1]--;
+                    //households[choosed_household][-1]++;
 
 
                     // we move the chosen_household
                     //check if the key (s, e , i - 1) exist
                     std::map<std::tuple<int, int, int>, std::vector<int> >::iterator it;
-                    it = states_to_households.find(std::make_tuple(s, e , i - 1));
+                    it = states_to_households.find(std::make_tuple(s, e, i - 1));
                     if (it != states_to_households.end())
-                        states_to_households[std::make_tuple(s, e , i - 1)].push_back(
+                        states_to_households[std::make_tuple(s, e, i - 1)].push_back(
                                 choosed_household);
                     else {
-                        states_to_households[std::make_tuple(s, e , i - 1)] = std::vector<int>(0);
-                        states_to_households[std::make_tuple(s, e , i - 1)].push_back(
+                        states_to_households[std::make_tuple(s, e, i - 1)] = std::vector<int>(0);
+                        states_to_households[std::make_tuple(s, e, i - 1)].push_back(
                                 choosed_household);
-
-
-                        states_to_households[extracted_tuple].erase(
-                                states_to_households[extracted_tuple].begin() + random_int);
-
-
                     }
-
+                    states_to_households[extracted_tuple].erase(
+                            states_to_households[extracted_tuple].begin() + random_int);
 
                     //--------------------------------------------------------------------------------------------------
 
@@ -369,7 +360,11 @@ void initialize_Households(std::vector<std::vector<int> > &households, int nh, i
     //first household will have one infected,the others none
     households[0][0] = nh - 1;
     states_to_households[std::make_tuple(nh - 1, 0, 1)] = std::vector<int>(1, 0);
+
     states_to_households[std::make_tuple(nh, 0, 0)] = std::vector<int>(0);
+    //alternative way
+    //states_to_households.insert(std::pair<std::tuple<int, int, int>,std::vector<int>>(std::make_tuple(nh, 0, 0), std::vector<int>(0)));
+
 
     households[0][number_of_exposed_compartments + 1] = 1;
     for (int i = 1; i < households.size(); i++) {
