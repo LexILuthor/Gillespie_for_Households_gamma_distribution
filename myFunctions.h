@@ -14,9 +14,11 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int>> &SEIR,
 
 void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
                                       std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                                      int &sumsHiH, int &j);
+                                      int &sumsHiH,std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
+                                      std::vector<std::vector<int> > &households, int number_of_infected_compartments,
+                                      int number_of_exposed_compartments, int &j);
 
-void new_Infected(std::vector<std::vector<int>> &SEIR,
+void new_Infected(std::vector<std::vector<int> > &SEIR,
                   std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
                   int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
                   std::vector<std::vector<int> > &households, int number_of_infected_compartments,
