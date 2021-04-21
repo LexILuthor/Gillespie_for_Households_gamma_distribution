@@ -55,7 +55,8 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                     std::vector<int> possible_households = states_to_households[extracted_tuple];
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
-
+                    households[choosed_household][0]--;
+                    households[choosed_household][1]++;
 
                     // we move the chosen_household
                     //check if the key (s, e - 1, i + 1) exist
@@ -133,7 +134,8 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
                     std::vector<int> possible_households = states_to_households[extracted_tuple];
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
-
+                    households[choosed_household][0]--;
+                    households[choosed_household][1]++;
 
                     // we move the chosen_household
                     //check if the key (s, e - 1, i + 1) exist
@@ -201,6 +203,7 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
                     // we know there are e*household_with_Susceptible_Infected_Exposed[s][e][i] exposed individuals
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
+
 
 
                     int cumsum = 0;
@@ -310,6 +313,8 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                     std::vector<int> possible_households = states_to_households[extracted_tuple];
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
+                    households[choosed_household][number_of_exposed_compartments+1]--;
+                    households[choosed_household][-1]++;
 
 
                     // we move the chosen_household
@@ -461,7 +466,7 @@ void write_the_csv_file(std::string outputpath, std::vector<std::vector<int> > &
     } else {
         for (int i = 0; i < temp.size(); i++) {
             //write only every 10
-            if (i % 100 == 0) {
+            if (i % 1 == 0) {
                 outfile << SEIR[0][i] << ",\t" << SEIR[1][i] << ",\t" << SEIR[2][i] << ",\t" << SEIR[3][i] << ",\t"
                         << temp[i] << "\n";
             }

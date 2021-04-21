@@ -20,8 +20,9 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
                          int number_of_infected_compartments, int number_of_exposed_compartments,
                          std::vector<double> &temp, std::vector<double> &time_lockdown) {
     //Here you can change the seed of the generator
-    std::default_random_engine generator(time(0));
-    //srand(time(0));
+    //std::default_random_engine generator(time(0));
+    std::default_random_engine generator(0);
+    srand(0);
     //std::default_random_engine generator;
 
     // vector containing al the households, each cell will be of the shape (s,e1,e2,e2,...,i1,i2,i3...)
@@ -116,7 +117,7 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
 
 
         //Randomly decide which event happened
-        double tmp = rand() / ((double) RAND_MAX + 1);
+        double tmp = rand() / ((double) RAND_MAX);
         if (tmp < se) {
             //new Exposed from a contact outside the household
             new_Exposed_outside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,
