@@ -8,5 +8,5 @@ threshold_under_which_we_change_from_beta2_to_beta1: 1.2
 BetaH: 2.27272727
 Ny: 0.21
 Gamma: 0.45
-number_of_infected_compartments: 1
+number_of_infected_compartments: 3
 number_of_exposed_compartments: 3
