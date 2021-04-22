@@ -70,8 +70,6 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                         states_to_households[std::make_tuple(s - 1, e + 1, i)].push_back(
                                 choosed_household);
 
-
-
                     }
                     states_to_households[extracted_tuple].erase(
                             states_to_households[extracted_tuple].begin() + random_int);
