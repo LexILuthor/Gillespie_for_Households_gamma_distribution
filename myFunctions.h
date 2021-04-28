@@ -111,8 +111,7 @@ void initialize_household_with_Susceptible_Infected_Exposed(
         std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
         int number_of_Households, int nh);
 
-void initialize_Households(std::vector<house> &households, parameter &par,
-                           std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households);
+void initialize_Households(std::vector<house > & households, parameter & par,state_to_household_map &states_to_household );
 
 
 double generateUnif_from_zeroExcluded_to(double to);

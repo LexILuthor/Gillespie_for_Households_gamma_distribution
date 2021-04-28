@@ -392,8 +392,7 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
-void initialize_Households(std::vector<house> &households, parameter par,
-                           std::map<std::tuple<int, int, int>, house> &states_to_households) {
+void initialize_Households(std::vector<house > & households, parameter & par,state_to_household_map &states_to_household ) {
     //first household will have one infected,the others none
     households[0].state = par.nh - 1;
     states_to_households[std::make_tuple(par.nh - 1, 0, 1)] = std::vector<int>(1, 0);

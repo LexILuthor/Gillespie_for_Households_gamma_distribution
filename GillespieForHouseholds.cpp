@@ -29,10 +29,10 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
 
     // map that connects each possible state (s,e,i,r) with the households that are in that state
 
+    state_to_household_map states_to_household(par);
 
-    std::map<std::tuple<int, int, int>, std::vector<house >> & households, parameter
-                                                                           & par,
-            initialize_Households(households, par, states_to_households);
+
+    initialize_Households(households, par, states_to_household);
 
     std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
     double move = (double) 1 / par.N;
