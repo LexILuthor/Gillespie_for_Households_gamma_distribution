@@ -21,6 +21,7 @@ int main() {
 
 
     read_Parameters_From_File(inputpath, parameters);
+    parameters.nh_max=parameters.nh;
 
     if (parameters.beta1 != parameters.beta2) {
         outputpath = "../Output/gillespie_Household_lockdown";

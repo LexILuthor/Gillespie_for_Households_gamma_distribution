@@ -17,10 +17,8 @@
 
 
 void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
-                                       std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                                       int &sumsHiH,
-                                       std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                                       std::vector<std::vector<int> > &households, parameter &par, int &j) {
+                                       state_to_household_map &states_to_household,
+                                       int &sumsHiH_nh, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -34,22 +32,24 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
 
     std::uniform_int_distribution<int> random_int(1, SEIR[0][j - 1]);
 
-    int size = household_with_Susceptible_Infected_Exposed[0].size();
+    //int size = par.nh_max;
     int cumulativeSum = 0;
 
-    for (int e = 0; e < size; e++) {
+    for (int e = 0; e < par.nh_max; e++) {
 
-        for (int i = 0; i < size - e; i++) {
+        for (int i = 0; i < par.nh_max - e; i++) {
 
-            for (int s = 0; s < size - (e + i); s++) {
-                cumulativeSum = cumulativeSum + (household_with_Susceptible_Infected_Exposed[s][i][e] * s);
+            for (int s = 0; s < par.nh_max - (e + i); s++) {
+                cumulativeSum = cumulativeSum + (states_to_household.matrix[s][i][e].size() * s);
                 if (randomUnif <= cumulativeSum) {
                     //allora abbiamo estratto il numero (s,i,e)
+                    //non sistemato
                     household_with_Susceptible_Infected_Exposed[s][i][e]--;
                     household_with_Susceptible_Infected_Exposed[s - 1][i][e + 1]++;
 
                     // this is the rewrite of:
                     // sumsHiH = sumsHiH - (s * i) + ((s - 1) * i )
+                    //non sistemato
                     sumsHiH = sumsHiH - i;
 
                     //--------------------------------------------------------------------------------------------------
@@ -94,11 +94,9 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
 }
 
 
-void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
-                                      std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                                      int &sumsHiH,
-                                      std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                                      std::vector<std::vector<int> > &households, parameter &par, int &j) {
+void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
+                                      state_to_household_map &states_to_household,
+                                      int &sumsHiH_nh, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -172,9 +170,8 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
 }
 
 void new_Infected(std::vector<std::vector<int> > &SEIR,
-                  std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                  int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                  std::vector<std::vector<int> > &households, parameter &par, int &j) {
+                  state_to_household_map &states_to_household,
+                  int &sumsHiH_nh, parameter &par, int &j) {
 
 
     //update households with susceptible based only on how many exposed an house has
@@ -268,9 +265,8 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
 
 
 void new_Recovered(std::vector<std::vector<int> > &SEIR,
-                   std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-                   int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                   std::vector<std::vector<int> > &households, parameter &par, int &j) {
+                   state_to_household_map &states_to_household,
+                   int &sumsHiH_nh, parameter &par, int &j {
 
 
     //update households with susceptible based only on how many infected an house has
@@ -392,23 +388,29 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
-void initialize_Households(std::vector<house > & households, parameter & par,state_to_household_map &states_to_household ) {
-    //first household will have one infected,the others none
-    households[0].state = par.nh - 1;
-    states_to_households[std::make_tuple(par.nh - 1, 0, 1)] = std::vector<int>(1, 0);
+int initialize_Households(parameter &par, state_to_household_map &states_to_household) {
+    int sumsHiH_nh = 0;
 
-    states_to_households[std::make_tuple(par.nh, 0, 0)] = std::vector<int>(0);
-    //alternative way
-    //states_to_households.insert(std::pair<std::tuple<int, int, int>,std::vector<int>>(std::make_tuple(nh, 0, 0), std::vector<int>(0)));
+    int nh = par.nh;
+    int s = nh - 1;
+    int e = 0;
+    int i = 1;
+    house household_tmp(nh, s, e, i, par);
+    states_to_household.add_household(household_tmp, s, e, i);
+    sumsHiH_nh = sumsHiH_nh + (s * i / nh);
 
 
-    households[0][par.number_of_exposed_compartments + 1] = 1;
-    for (int i = 1; i < households.size(); i++) {
-        households[i][0] = par.nh;
-        states_to_households[std::make_tuple(par.nh, 0, 0)].push_back(i);
+    for (int z = 1; z < par.number_of_Households; z++) {
+        int nh = par.nh;
+        int s = nh;
+        int e = 0;
+        int i = 0;
+        house household_tmp(nh, s, e, i, par);
+        states_to_household.add_household(household_tmp, s, e, i);
+        sumsHiH_nh = sumsHiH_nh + (s * i / nh);
     }
 
-
+    return sumsHiH_nh;
 }
 
 
