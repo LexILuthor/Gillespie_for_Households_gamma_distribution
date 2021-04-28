@@ -21,9 +21,11 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
                          std::vector<double> &temp, std::vector<double> &time_lockdown) {
     //Here you can change the seed of the generator
     //std::default_random_engine generator(time(0));
-    std::default_random_engine generator(0);
-    srand(0);
-    //std::default_random_engine generator;
+    //std::default_random_engine generator(0);
+    std::default_random_engine generator;
+    //srand(0);
+    //srand(time(0));
+
 
     // vector containing al the households, each cell will be of the shape (s,e1,e2,e2,...,i1,i2,i3...)
     std::vector<std::vector<int> > households(number_of_Households, std::vector<int>(
@@ -57,6 +59,9 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
                                                            number_of_Households, number_of_people_in_one_Household);
 
     double beta = beta1;
+
+    std::exponential_distribution<double> exp_distribution(1);
+    std::uniform_real_distribution<double> uniform_Real_Distribution(0.0, 1.0);
 
 
     // here we simulate the process
@@ -111,13 +116,17 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
 
 
         //generate the time of the next event with an exponential with parameter lambda
-        std::exponential_distribution<double> exp_distribution(lambda);
         double event = exp_distribution(generator);
+
+
+        event = event / lambda;
         temp.push_back(temp.back() + event);
 
 
         //Randomly decide which event happened
-        double tmp = rand() / ((double) RAND_MAX);
+        //double tmp = rand() / ((double) RAND_MAX);
+        double tmp = uniform_Real_Distribution(generator);
+
         if (tmp < se) {
             //new Exposed from a contact outside the household
             new_Exposed_outside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,

@@ -9,6 +9,7 @@
 #include <random>
 #include <map>
 #include<tuple>
+#include <time.h>
 #include <math.h>
 #include "myFunctions.h"
 
@@ -29,6 +30,9 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
     // generate a random number and decide which household will change
 
     double randomUnif = generateUnif_from_zeroExcluded_to(SEIR[0][j - 1]);
+
+    std::uniform_int_distribution<int> random_int(1,SEIR[0][j - 1]);
+
     int size = household_with_Susceptible_Infected_Exposed[0].size();
     int cumulativeSum = 0;
 
@@ -53,6 +57,8 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                     //we have a new exposed
                     std::tuple<int, int, int> extracted_tuple = std::make_tuple(s, e, i);
                     std::vector<int> possible_households = states_to_households[extracted_tuple];
+
+
                     int random_int = rand() % possible_households.size();
                     int choosed_household = possible_households[random_int];
                     households[choosed_household][0]--;
@@ -531,7 +537,8 @@ void initialize_household_with_Susceptible_Infected_Exposed(
 
 
 double generateUnif_from_zeroExcluded_to(double to) {
-    std::default_random_engine generator(0);
+    //std::default_random_engine generator(time(0));
+    std::default_random_engine generator;
     std::uniform_real_distribution<double> uniform_distribution(0.0, to);
 
     double randomUnif = uniform_distribution(generator);
