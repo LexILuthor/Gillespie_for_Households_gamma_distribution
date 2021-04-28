@@ -9,6 +9,8 @@
 #include <random>
 #include <map>
 #include<tuple>
+#include <list>
+
 #include <time.h>
 #include <math.h>
 #include "myFunctions.h"
@@ -18,8 +20,7 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                                        std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
                                        int &sumsHiH,
                                        std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                                       std::vector<std::vector<int> > &households, int number_of_infected_compartments,
-                                       int number_of_exposed_compartments, int &j) {
+                                       std::vector<std::vector<int> > &households, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -31,7 +32,7 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
 
     double randomUnif = generateUnif_from_zeroExcluded_to(SEIR[0][j - 1]);
 
-    std::uniform_int_distribution<int> random_int(1,SEIR[0][j - 1]);
+    std::uniform_int_distribution<int> random_int(1, SEIR[0][j - 1]);
 
     int size = household_with_Susceptible_Infected_Exposed[0].size();
     int cumulativeSum = 0;
@@ -97,8 +98,7 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
                                       std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
                                       int &sumsHiH,
                                       std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                                      std::vector<std::vector<int> > &households, int number_of_infected_compartments,
-                                      int number_of_exposed_compartments, int &j) {
+                                      std::vector<std::vector<int> > &households, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -174,8 +174,7 @@ void new_exposed_inside_the_household(std::vector<std::vector<int>> &SEIR,
 void new_Infected(std::vector<std::vector<int> > &SEIR,
                   std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
                   int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                  std::vector<std::vector<int> > &households, int number_of_infected_compartments,
-                  int number_of_exposed_compartments, int &j) {
+                  std::vector<std::vector<int> > &households, parameter &par, int &j) {
 
 
     //update households with susceptible based only on how many exposed an house has
@@ -207,13 +206,13 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
 
                     int cumsum = 0;
                     double random_compartment = generateUnif_from_zeroExcluded_to(e);
-                    for (int z = 1; z < 1 + number_of_exposed_compartments; z++) {
+                    for (int z = 1; z < 1 + par.number_of_exposed_compartments; z++) {
                         cumsum = cumsum + households[choosed_household][z];
                         if (cumsum >= random_compartment) {
                             //the compartment in which the change will happen is z
                             households[choosed_household][z]--;
                             households[choosed_household][z + 1]++;
-                            if (z < number_of_exposed_compartments) {
+                            if (z < par.number_of_exposed_compartments) {
                                 // we just have a move from one exposed compartment to another
                                 SEIR[0].push_back(SEIR[0][j - 1]);
                                 SEIR[1].push_back(SEIR[1][j - 1]);
@@ -271,8 +270,7 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
 void new_Recovered(std::vector<std::vector<int> > &SEIR,
                    std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
                    int &sumsHiH, std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households,
-                   std::vector<std::vector<int> > &households, int number_of_infected_compartments,
-                   int number_of_exposed_compartments, int &j) {
+                   std::vector<std::vector<int> > &households, parameter &par, int &j) {
 
 
     //update households with susceptible based only on how many infected an house has
@@ -312,14 +310,14 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
 
                     int cumsum = 0;
                     double random_compartment = generateUnif_from_zeroExcluded_to(i);
-                    for (int z = 1 + number_of_exposed_compartments;
-                         z < 1 + number_of_exposed_compartments + number_of_infected_compartments; z++) {
+                    for (int z = 1 + par.number_of_exposed_compartments;
+                         z < 1 + par.number_of_exposed_compartments + par.number_of_infected_compartments; z++) {
                         cumsum = cumsum + households[choosed_household][z];
                         if (cumsum >= random_compartment) {
                             //the compartment in which the change will happen is z
                             households[choosed_household][z]--;
                             households[choosed_household][z + 1]++;
-                            if (z < number_of_exposed_compartments + number_of_infected_compartments) {
+                            if (z < par.number_of_exposed_compartments + par.number_of_infected_compartments) {
                                 // we just have a move from one exposed compartment to another
                                 SEIR[0].push_back(SEIR[0][j - 1]);
                                 SEIR[1].push_back(SEIR[1][j - 1]);
@@ -345,13 +343,13 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                                 // we move the chosen_household
                                 //check if the key (s, e - 1, i + 1) exist
                                 std::map<std::tuple<int, int, int>, std::vector<int> >::iterator it;
-                                it = states_to_households.find(std::make_tuple(s, e , i - 1));
+                                it = states_to_households.find(std::make_tuple(s, e, i - 1));
                                 if (it != states_to_households.end())
-                                    states_to_households[std::make_tuple(s, e , i - 1)].push_back(
+                                    states_to_households[std::make_tuple(s, e, i - 1)].push_back(
                                             choosed_household);
                                 else {
-                                    states_to_households[std::make_tuple(s, e , i - 1)] = std::vector<int>(0);
-                                    states_to_households[std::make_tuple(s, e , i - 1)].push_back(
+                                    states_to_households[std::make_tuple(s, e, i - 1)] = std::vector<int>(0);
+                                    states_to_households[std::make_tuple(s, e, i - 1)].push_back(
                                             choosed_household);
 
 
@@ -394,32 +392,28 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
-void initialize_Households(std::vector<std::vector<int> > &households, int nh, int number_of_exposed_compartments,
-                           std::map<std::tuple<int, int, int>, std::vector<int> > &states_to_households) {
+void initialize_Households(std::vector<house> &households, parameter par,
+                           std::map<std::tuple<int, int, int>, house> &states_to_households) {
     //first household will have one infected,the others none
-    households[0][0] = nh - 1;
-    states_to_households[std::make_tuple(nh - 1, 0, 1)] = std::vector<int>(1, 0);
+    households[0].state = par.nh - 1;
+    states_to_households[std::make_tuple(par.nh - 1, 0, 1)] = std::vector<int>(1, 0);
 
-    states_to_households[std::make_tuple(nh, 0, 0)] = std::vector<int>(0);
+    states_to_households[std::make_tuple(par.nh, 0, 0)] = std::vector<int>(0);
     //alternative way
     //states_to_households.insert(std::pair<std::tuple<int, int, int>,std::vector<int>>(std::make_tuple(nh, 0, 0), std::vector<int>(0)));
 
 
-    households[0][number_of_exposed_compartments + 1] = 1;
+    households[0][par.number_of_exposed_compartments + 1] = 1;
     for (int i = 1; i < households.size(); i++) {
-        households[i][0] = nh;
-        states_to_households[std::make_tuple(nh, 0, 0)].push_back(i);
+        households[i][0] = par.nh;
+        states_to_households[std::make_tuple(par.nh, 0, 0)].push_back(i);
     }
 
 
 }
 
 
-void read_Parameters_From_File(std::string inputpath, int &nSteps, int &number_of_Households,
-                               int &number_of_people_in_one_Household, double &beta1, double &beta2,
-                               double &threshold_above_which_one_to_two, double &threshold_under_which_two_to_one,
-                               double &betaH, double &ny, double &gamma, int &number_of_infected_compartments,
-                               int &number_of_exposed_compartments) {
+void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
 
     std::string line;
     std::ifstream infile(inputpath);
@@ -428,66 +422,66 @@ void read_Parameters_From_File(std::string inputpath, int &nSteps, int &number_o
         //number of steps
         getline(infile, line, ':');
         getline(infile, line);
-        nSteps = std::stoi(line);
+        parameters.nSteps = std::stoi(line);
 
         //number of Households
         getline(infile, line, ':');
         getline(infile, line);
-        number_of_Households = std::stoi(line);
+        parameters.number_of_Households = std::stoi(line);
 
         // number of people in one Household
         getline(infile, line, ':');
         getline(infile, line);
-        number_of_people_in_one_Household = std::stoi(line);
+        parameters.nh = std::stoi(line);
 
 
         //beta1 is the initial beta
         getline(infile, line, ':');
         getline(infile, line);
-        beta1 = std::stod(line);
+        parameters.beta1 = std::stod(line);
 
         //beta2 is the second beta after the start of the lockdown
         getline(infile, line, ':');
         getline(infile, line);
-        beta2 = std::stod(line);
+        parameters.beta2 = std::stod(line);
 
         //
         getline(infile, line, ':');
         getline(infile, line);
-        threshold_above_which_one_to_two = std::stod(line);
+        parameters.threshold_above_which_one_to_two = std::stod(line);
 
         // the
         getline(infile, line, ':');
         getline(infile, line);
-        threshold_under_which_two_to_one = std::stod(line);
+        parameters.threshold_under_which_two_to_one = std::stod(line);
 
         //betaH
         getline(infile, line, ':');
         getline(infile, line);
-        betaH = std::stod(line);
+        parameters.betaH = std::stod(line);
 
 
         //ny
         getline(infile, line, ':');
         getline(infile, line);
-        ny = std::stod(line);
+        parameters.ny = std::stod(line);
 
 
         //gamma
         getline(infile, line, ':');
         getline(infile, line);
-        gamma = std::stod(line);
+        parameters.gamma = std::stod(line);
 
         //number_of_infected_compartments
         getline(infile, line, ':');
         getline(infile, line);
-        number_of_infected_compartments = std::stod(line);
+        parameters.number_of_infected_compartments = std::stod(line);
 
 
         //number_of_exposed_compartments
         getline(infile, line, ':');
         getline(infile, line);
-        number_of_exposed_compartments = std::stod(line);
+        parameters.number_of_exposed_compartments = std::stod(line);
 
         infile.close();
     } else std::cout << "Unable to open file";
@@ -530,9 +524,9 @@ void write_lock_down_files(std::string outputpath, std::vector<double> &time_loc
 
 void initialize_household_with_Susceptible_Infected_Exposed(
         std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-        int number_of_Households, int number_of_people_in_one_Household) {
-    household_with_Susceptible_Infected_Exposed[number_of_people_in_one_Household][0][0] = number_of_Households - 1;
-    household_with_Susceptible_Infected_Exposed[number_of_people_in_one_Household - 1][1][0] = 1;
+        int number_of_Households, int nh) {
+    household_with_Susceptible_Infected_Exposed[nh][0][0] = number_of_Households - 1;
+    household_with_Susceptible_Infected_Exposed[nh - 1][1][0] = 1;
 }
 
 

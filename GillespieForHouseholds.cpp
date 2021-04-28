@@ -7,18 +7,15 @@
 #include <vector>
 #include<cstdlib>
 #include <random>
-#include <time.h>
 #include <map>
 #include<tuple>
+#include <time.h>
 #include "myFunctions.h"
 #include "GillespieForHouseholds.h"
 
+
 std::vector<std::vector<int> >
-gillespie_for_Households(int nSteps, int N, int number_of_Households, int number_of_people_in_one_Household,
-                         double beta1, double beta2, double threshold_above_which_one_to_two,
-                         double threshold_under_which_two_to_one, double betaH, double ny, double gamma,
-                         int number_of_infected_compartments, int number_of_exposed_compartments,
-                         std::vector<double> &temp, std::vector<double> &time_lockdown) {
+gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<double> &time_lockdown) {
     //Here you can change the seed of the generator
     //std::default_random_engine generator(time(0));
     //std::default_random_engine generator(0);
@@ -28,37 +25,34 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
 
 
     // vector containing al the households, each cell will be of the shape (s,e1,e2,e2,...,i1,i2,i3...)
-    std::vector<std::vector<int> > households(number_of_Households, std::vector<int>(
-            1 + number_of_exposed_compartments + number_of_infected_compartments, 0));
+    std::vector<house> households(par.number_of_Households);
 
     // map that connects each possible state (s,e,i,r) with the households that are in that state
-    std::map<std::tuple<int, int, int>, std::vector<int> > states_to_households;
 
-    initialize_Households(households, number_of_people_in_one_Household, number_of_exposed_compartments,
-                          states_to_households);
+
+    std::map<std::tuple<int, int, int>, std::vector<house >> & households, parameter
+                                                                           & par,
+            initialize_Households(households, par, states_to_households);
 
     std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
-    double move = (double) 1 / N;
+    double move = (double) 1 / par.N;
 
     //setting the initial conditions with N-1 susceptible 1 infected and zero exposed and recovered
-    initializeSEIRandTemp(SEIR, temp, N);
+    initializeSEIRandTemp(SEIR, temp, par.N);
 
     //the sum of (number of susceptible)*(number of infected) over all household
-    int sumsHiH = number_of_people_in_one_Household - 1;
+    int sumsHiH = par.nh - 1;
 
 
     //the matrix "household_with_Susceptible_Infected_Exposed" will contain in the position [s,i,e] the number of households with i susceptible people, i infected and e exposed
     std::vector<std::vector<std::vector<int>>> household_with_Susceptible_Infected_Exposed(
-            number_of_people_in_one_Household + 1, std::vector<std::vector<int>>(number_of_people_in_one_Household + 1,
-                                                                                 std::vector<int>(
-                                                                                         number_of_people_in_one_Household +
-                                                                                         1, 0)));
+            par.nh + 1, std::vector<std::vector<int>>(par.nh + 1, std::vector<int>(par.nh + 1, 0)));
 
     //setting the initial condition of the matrix "household_with_Susceptible_Infected_Exposed"
     initialize_household_with_Susceptible_Infected_Exposed(household_with_Susceptible_Infected_Exposed,
-                                                           number_of_Households, number_of_people_in_one_Household);
+                                                           par.number_of_Households, par.nh);
 
-    double beta = beta1;
+    par.beta = par.beta1;
 
     std::exponential_distribution<double> exp_distribution(1);
     std::uniform_real_distribution<double> uniform_Real_Distribution(0.0, 1.0);
@@ -66,7 +60,7 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
 
     // here we simulate the process
     int j = 1;
-    while (j < nSteps) {
+    while (j < par.nSteps) {
         //number of Susceptible
         int s = SEIR[0][j - 1];
 
@@ -80,19 +74,19 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
         int r = SEIR[3][j - 1];
 
 
-        if (r == N) {
+        if (r == par.N) {
             //everyone recovered
             return SEIR;
         }
 
         //change beta when we have 10% of the population recovered
 
-        if (i >= (N / 100) * threshold_above_which_one_to_two && beta != beta2) {
-            beta = beta2;
+        if (i >= (par.N / 100) * par.threshold_above_which_one_to_two && par.beta != par.beta2) {
+            par.beta = par.beta2;
             std::cout << "beta decrease at time t= " << temp.back() << "\n";
             time_lockdown.push_back(temp.back());
-        } else if (i < (N / 100) * threshold_under_which_two_to_one && beta != beta1) {
-            beta = beta1;
+        } else if (i < (par.N / 100) * par.threshold_under_which_two_to_one && par.beta != par.beta1) {
+            par.beta = par.beta1;
             std::cout << "beta increase at time t= " << temp.back() << "\n";
             time_lockdown.push_back(temp.back());
         }
@@ -101,10 +95,10 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
         // compute the parameter lambda of the exponential and the probabilities of
         // S->E, E->I, I->R
 
-        double se = beta * s * i * move;
-        double seH = betaH * sumsHiH / number_of_people_in_one_Household;
-        double ei = ny * e;
-        double ir = gamma * i;
+        double se = par.beta * s * i * move;
+        double seH = par.betaH * sumsHiH / par.nh;
+        double ei = par.ny * e;
+        double ir = par.gamma * i;
         double lambda = (se + seH + ei + ir);
         if (lambda == 0) {
             break;
@@ -131,20 +125,19 @@ gillespie_for_Households(int nSteps, int N, int number_of_Households, int number
             //new Exposed from a contact outside the household
             new_Exposed_outside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,
                                               states_to_households, households,
-                                              number_of_infected_compartments, number_of_exposed_compartments, j);
+                                              par, j);
         } else if (tmp < (se + seH)) {
             //new Exposed from a contact within the household
             new_exposed_inside_the_household(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH,
-                                             states_to_households, households, number_of_infected_compartments,
-                                             number_of_exposed_compartments, j);
+                                             states_to_households, households, par, j);
         } else if (tmp < (se + seH + ei)) {
             //new infected
             new_Infected(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, states_to_households, households,
-                         number_of_infected_compartments, number_of_exposed_compartments, j);
+                         par, j);
         } else {
             //new Recovered
             new_Recovered(SEIR, household_with_Susceptible_Infected_Exposed, sumsHiH, states_to_households, households,
-                          number_of_infected_compartments, number_of_exposed_compartments, j);
+                          par, j);
         }
         j++;
     }
