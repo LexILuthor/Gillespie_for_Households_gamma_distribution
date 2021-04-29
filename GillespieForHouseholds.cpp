@@ -21,7 +21,6 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
     //Here you can change the seed of the generator
     //std::default_random_engine generator(time(0));
     //std::default_random_engine generator(0);
-    std::default_random_engine generator;
     //srand(0);
     //srand(time(0));
 
@@ -31,12 +30,13 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
     state_to_household_map states_to_household(par);
 
     //the sum of (number of susceptible)*(number of infected)/nh over all household
-    int sumsHiH_nh = initialize_Households(par, states_to_household);
+    double sumsHiH_nh = initialize_Households(par, states_to_household);
 
-    std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
-    double move = (double) 1 / par.N;
+
+
 
     //setting the initial conditions with N-1 susceptible 1 infected and zero exposed and recovered
+    std::vector<std::vector<int> > SEIR(4, std::vector<int>(1, 0));
     initializeSEIRandTemp(SEIR, temp, par.N);
 
 
@@ -46,9 +46,12 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
     std::uniform_real_distribution<double> uniform_Real_Distribution(0.0, 1.0);
 
 
+    double move = (double) 1 / par.N;
+
     // here we simulate the process
     int j = 1;
     while (j < par.nSteps) {
+
         //number of Susceptible
         int s = SEIR[0][j - 1];
 
@@ -79,10 +82,13 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
             time_lockdown.push_back(temp.back());
         }
 
+        //sumsHiH_nh gives some problems of approximation since it is a double, here i try to fix
+        if (sumsHiH_nh < (0.1/par.nh_max) || (i == 0 && s == 0)) {
+            sumsHiH_nh = 0;
+        }
 
         // compute the parameter lambda of the exponential and the probabilities of
         // S->E, E->I, I->R
-
         double se = par.beta * s * i * move;
         double seH = par.betaH * sumsHiH_nh;
         double ei = par.ny * e;
@@ -97,17 +103,17 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
         ir = ir / lambda;
 
 
+
+
         //generate the time of the next event with an exponential with parameter lambda
-        double event = exp_distribution(generator);
-
-
+        double event = exp_distribution(par.generator);
         event = event / lambda;
         temp.push_back(temp.back() + event);
 
 
         //Randomly decide which event happened
         //double tmp = rand() / ((double) RAND_MAX);
-        double tmp = uniform_Real_Distribution(generator);
+        double tmp = uniform_Real_Distribution(par.generator);
 
         if (tmp < se) {
             //new Exposed from a contact outside the household

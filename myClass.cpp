@@ -29,6 +29,7 @@ house::house(int nh, int s, int e, int i, parameter par) {
 
 house::house(std::vector<int> &state_to_copy,int nh){
     dimension=nh;
+    //state.assign(state_to_copy.begin(),state_to_copy.end());
     state=state_to_copy;
 
 }

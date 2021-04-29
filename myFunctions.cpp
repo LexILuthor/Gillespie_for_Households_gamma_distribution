@@ -19,7 +19,7 @@
 
 void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                                        state_to_household_map &states_to_household,
-                                       int &sumsHiH_nh, parameter &par, int &j) {
+                                       double &sumsHiH_nh, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -44,7 +44,7 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
             for (int s = 0; s <= par.nh_max - (e + i); s++) {
                 cumulativeSum = cumulativeSum + ((int) states_to_household.matrix[s][e][i].size() * s);
                 if (random_i <= cumulativeSum) {
-                    //allora abbiamo estratto il numero (s,i,e)
+                    //allora abbiamo estratto il numero (s,e,i)
 
                     //we have a new exposed
 
@@ -57,7 +57,7 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                     // this is the rewrite of:
                     // sumsHiH = sumsHiH - (s * i)/nh + ((s - 1) * i )/nh
 
-                    sumsHiH_nh = sumsHiH_nh - i / selected_household.dimension;
+                    sumsHiH_nh = sumsHiH_nh - (double)i / selected_household.dimension;
 
 
 
@@ -76,7 +76,7 @@ void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
 
 void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
                                       state_to_household_map &states_to_household,
-                                      int &sumsHiH_nh, parameter &par, int &j) {
+                                      double &sumsHiH_nh, parameter &par, int &j) {
     SEIR[0].push_back(SEIR[0][j - 1] - 1);
     SEIR[1].push_back(SEIR[1][j - 1] + 1);
     SEIR[2].push_back(SEIR[2][j - 1]);
@@ -85,7 +85,12 @@ void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
     //update households with susceptible based on how the quantity susceptible * infected/nh
     //update also sumsHiH
     // generate a random number and decide which household will change
-    double randomUnif = generateUnif_from_zeroExcluded_to(sumsHiH_nh, par);
+    //double randomUnif = generateUnif_from_zeroExcluded_to(sumsHiH_nh, par);
+
+    std::uniform_real_distribution<double> random_real(0, sumsHiH_nh);
+    double randomUnif = random_real(par.generator);
+
+
     double cumulativeSum = 0;
 
     for (int e = 0; e <= par.nh_max; e++) {
@@ -98,13 +103,9 @@ void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
 
                     //allora abbiamo estratto il numero (s,e,i)
 
+                    house selected_household = states_to_household.select_household_in_state_based_on_infectivity(
+                            s, e, i, par);
 
-
-                    //--------------------------------------------------------------------------------------------------
-
-                    house selected_household = states_to_household.select_household_in_state_based_on_infectivity(s, e,
-                                                                                                                  i,
-                                                                                                                  par);
                     selected_household.state[0]--;
                     selected_household.state[1]++;
 
@@ -113,7 +114,7 @@ void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
                     // this is the rewrite of:
                     // sumsHiH = sumsHiH - (s * i)/nh + ((s - 1) * i )/nh
 
-                    sumsHiH_nh = sumsHiH_nh - i / selected_household.dimension;
+                    sumsHiH_nh = sumsHiH_nh - (double)i / selected_household.dimension;
 
 
 
@@ -134,7 +135,7 @@ void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
 
 void new_Infected(std::vector<std::vector<int> > &SEIR,
                   state_to_household_map &states_to_household,
-                  int &sumsHiH_nh, parameter &par, int &j) {
+                  double &sumsHiH_nh, parameter &par, int &j) {
 
 
     //update households with susceptible based only on how many exposed an house has
@@ -190,7 +191,7 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
                         // this is the rewrite of:
                         // sumsHiH = sumsHiH - (s * i)/nh + (s * (i + 1) )/nh
 
-                        sumsHiH_nh = sumsHiH_nh + s / selected_household.dimension;
+                        sumsHiH_nh = sumsHiH_nh + (double)s / selected_household.dimension;
 
                         states_to_household.add_household(selected_household, s, e - 1, i + 1);
 
@@ -204,13 +205,10 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
 
                         states_to_household.add_household(selected_household, s, e, i);
 
+
                     }
 
-
-
                     //--------------------------------------------------------------------------------------------------
-
-
 
                     goto skip;
 
@@ -224,7 +222,7 @@ void new_Infected(std::vector<std::vector<int> > &SEIR,
 
 void new_Recovered(std::vector<std::vector<int> > &SEIR,
                    state_to_household_map &states_to_household,
-                   int &sumsHiH_nh, parameter &par, int &j) {
+                   double &sumsHiH_nh, parameter &par, int &j) {
 
 
     //update households with susceptible based only on how many infected an house has
@@ -282,7 +280,7 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                         // this is the rewrite of:
                         // sumsHiH = sumsHiH - (s * i)/nh + (s * (i -1) )/nh
 
-                        sumsHiH_nh = sumsHiH_nh - s / selected_household.dimension;
+                        sumsHiH_nh = sumsHiH_nh - (double)s / selected_household.dimension;
 
 
                         states_to_household.add_household(selected_household, s, e, i - 1);
@@ -300,8 +298,6 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                         states_to_household.add_household(selected_household, s, e, i);
 
                     }
-
-
 
 
                     goto skip;
@@ -333,28 +329,67 @@ void initializeSEIRandTemp(std::vector<std::vector<int> > &SEIR, std::vector<dou
 
 }
 
-int initialize_Households(parameter &par, state_to_household_map &states_to_household) {
-    int sumsHiH_nh = 0;
+double initialize_Households(parameter &par, state_to_household_map &states_to_household) {
+    double sumsHiH_nh = 0;
+    int total_population = 0;
 
-    int nh = par.nh;
+    int n = 100;
+    double p = (double)par.nh_mean / n;
+
+    std::binomial_distribution<int> bin_distribution(n, p);
+    int nh = bin_distribution(par.generator);
+
+    //make sure that nh is in (0,par.nh_max]
+    while (nh > par.nh_max || nh <= 0) {
+        nh = bin_distribution(par.generator);
+    }
+
+    //------------------------------------------------------------------------------------------------------------------
+
+    nh=par.nh_mean;
+
+    //------------------------------------------------------------------------------------------------------------------
+
+
+    //initialize first household with one infected
     int s = nh - 1;
     int e = 0;
     int i = 1;
     house household_tmp(nh, s, e, i, par);
     states_to_household.add_household(household_tmp, s, e, i);
-    sumsHiH_nh = sumsHiH_nh + (s * i / nh);
+    sumsHiH_nh = sumsHiH_nh + ((double)s * i / nh);
 
+    total_population = total_population + nh;
+
+
+    //initialize remaining households with zero infected
 
     for (int z = 1; z < par.number_of_Households; z++) {
-        int nh = par.nh;
-        int s = nh;
-        int e = 0;
-        int i = 0;
+
+        nh = bin_distribution(par.generator);
+        //make sure that nh is in (0,par.nh_max]
+        while (nh > par.nh_max || nh <= 0) {
+            nh = bin_distribution(par.generator);
+        }
+
+        //------------------------------------------------------------------------------------------------------------------
+
+        nh=par.nh_mean;
+
+        //------------------------------------------------------------------------------------------------------------------
+
+        s = nh;
+        e = 0;
+        i = 0;
+
         house household_tmp(nh, s, e, i, par);
         states_to_household.add_household(household_tmp, s, e, i);
         sumsHiH_nh = sumsHiH_nh + (s * i / nh);
+
+        total_population = total_population + nh;
     }
 
+    par.N = total_population;
     return sumsHiH_nh;
 }
 
@@ -375,11 +410,15 @@ void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
         getline(infile, line);
         parameters.number_of_Households = std::stoi(line);
 
-        // number of people in one Household
+        // maximum number of people in one Household
         getline(infile, line, ':');
         getline(infile, line);
-        parameters.nh = std::stoi(line);
+        parameters.nh_max = std::stoi(line);
 
+        // mean number of people in one Household
+        getline(infile, line, ':');
+        getline(infile, line);
+        parameters.nh_mean = std::stoi(line);
 
         //beta1 is the initial beta
         getline(infile, line, ':');
@@ -439,8 +478,8 @@ void write_the_csv_file(std::string outputpath, std::vector<std::vector<int> > &
         std::cout << "Unable to open file";
     } else {
         for (int i = 0; i < temp.size(); i++) {
-            //write only every 10
-            if (i % 1 == 0) {
+            //write only every 20
+            if (i % 20 == 0) {
                 outfile << SEIR[0][i] << ",\t" << SEIR[1][i] << ",\t" << SEIR[2][i] << ",\t" << SEIR[3][i] << ",\t"
                         << temp[i] << "\n";
             }
@@ -465,14 +504,6 @@ void write_lock_down_files(std::string outputpath, std::vector<double> &time_loc
         outfile.close();
     }
 
-}
-
-
-void initialize_household_with_Susceptible_Infected_Exposed(
-        std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
-        int number_of_Households, int nh) {
-    household_with_Susceptible_Infected_Exposed[nh][0][0] = number_of_Households - 1;
-    household_with_Susceptible_Infected_Exposed[nh - 1][1][0] = 1;
 }
 
 

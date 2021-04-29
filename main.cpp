@@ -30,10 +30,13 @@ int main() {
         outputpath = "../Output/gillespie_Household_lockdown";
     }
 
-    par.N = par.number_of_Households * par.nh;
-    unsigned seed = 0;
+
+
+    std::random_device myRandomDevice;
+    //unsigned seed = myRandomDevice();
+    unsigned seed = 10;
     par.initialize_generator(seed);
-    par.nh_max = par.nh;
+
 
 
     // Gillespie algorithm.

@@ -19,7 +19,7 @@ public:
     int number_of_Households;
 
     // number of people in one Household
-    int nh;
+    int nh_mean;
 
     // number of people in one Household
     int nh_max;

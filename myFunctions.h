@@ -10,19 +10,19 @@
 
 void new_Exposed_outside_the_household(std::vector<std::vector<int> > &SEIR,
                                        state_to_household_map &states_to_household,
-                                       int &sumsHiH_nh, parameter &par, int &j);
+                                       double &sumsHiH_nh, parameter &par, int &j);
 
 void new_exposed_inside_the_household(std::vector<std::vector<int> > &SEIR,
                                       state_to_household_map &states_to_household,
-                                      int &sumsHiH_nh, parameter &par, int &j);
+                                      double &sumsHiH_nh, parameter &par, int &j);
 
 void new_Infected(std::vector<std::vector<int> > &SEIR,
                   state_to_household_map &states_to_household,
-                  int &sumsHiH_nh, parameter &par, int &j);
+                  double &sumsHiH_nh, parameter &par, int &j);
 
 void new_Recovered(std::vector<std::vector<int> > &SEIR,
                    state_to_household_map &states_to_household,
-                   int &sumsHiH_nh, parameter &par, int &j);
+                   double &sumsHiH_nh, parameter &par, int &j);
 
 void initializeSEIRandTemp(std::vector<std::vector<int>> &SEIR, std::vector<double> &temp, int &N);
 
@@ -36,7 +36,7 @@ void initialize_household_with_Susceptible_Infected_Exposed(
         std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
         int number_of_Households, int nh);
 
-int initialize_Households(parameter &par, state_to_household_map &states_to_household);
+double initialize_Households(parameter &par, state_to_household_map &states_to_household);
 
 
 double generateUnif_from_zeroExcluded_to(double to, parameter &par);
