@@ -10,6 +10,8 @@
 #include <map>
 #include<tuple>
 #include <time.h>
+
+#include "myClass.h"
 #include "myFunctions.h"
 #include "GillespieForHouseholds.h"
 
@@ -26,7 +28,7 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
 
 
     // map that connects each possible state (s,e,i,r) with the households that are in that state
-    state_to_household_map states_to_household(par.nh_max);
+    state_to_household_map states_to_household(par);
 
     //the sum of (number of susceptible)*(number of infected)/nh over all household
     int sumsHiH_nh = initialize_Households(par, states_to_household);

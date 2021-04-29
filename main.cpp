@@ -1,33 +1,39 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <random>
+#include <list>
+
+
+#include "myClass.h"
 #include "myFunctions.h"
 #include "GillespieForHouseholds.h"
 
 
-
-
 int main() {
 
-    parameter parameters;
 
     std::string inputpath = "../Input/Input_Gillespie_Household.txt";
     std::string outputpath = "../Output/gillespie_Household";
 
 
-
-
     int tot_simulations = 100;
 
+    parameter par;
+    read_Parameters_From_File(inputpath, par);
 
-    read_Parameters_From_File(inputpath, parameters);
-    parameters.nh_max=parameters.nh;
 
-    if (parameters.beta1 != parameters.beta2) {
+
+    //par.initialize_generator(seed=0);
+
+    if (par.beta1 != par.beta2) {
         outputpath = "../Output/gillespie_Household_lockdown";
     }
 
-    parameters.N = parameters.number_of_Households * parameters.nh;
+    par.N = par.number_of_Households * par.nh;
+    unsigned seed = 0;
+    par.initialize_generator(seed);
+    par.nh_max = par.nh;
 
 
     // Gillespie algorithm.
@@ -36,10 +42,10 @@ int main() {
     for (int i = 0; i < tot_simulations; i++) {
         std::vector<double> tempo;
         std::vector<double> time_lockdown;
-        std::vector<std::vector<int> > SEIR = gillespie_for_Households(parameters, tempo,
+        std::vector<std::vector<int> > SEIR = gillespie_for_Households(par, tempo,
                                                                        time_lockdown);
 
-        if (parameters.beta1 != parameters.beta2) {
+        if (par.beta1 != par.beta2) {
             write_lock_down_files(outputpath + std::to_string(i) + "lock_down_time" + ".txt", time_lockdown);
         }
         write_the_csv_file(outputpath + std::to_string(i) + ".csv", SEIR, tempo);
