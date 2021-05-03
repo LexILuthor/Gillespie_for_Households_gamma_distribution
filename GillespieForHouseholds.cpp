@@ -70,19 +70,22 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
             return SEIR;
         }
 
-        //change beta when we have 10% of the population recovered
+        //change beta when we have threshold_above_which_one_to_two % of the population infected
+        // or les than threshold_under_which_two_to_one % is infected
 
-        if (i >= ((double) par.N / 100) * par.threshold_above_which_one_to_two && par.beta != par.beta2) {
+        if (e >= ((double) par.N / 100) * par.threshold_above_which_one_to_two && par.beta != par.beta2) {
             par.beta = par.beta2;
             std::cout << "beta decrease at time t= " << temp.back() << "\n";
             time_lockdown.push_back(temp.back());
-        } else if (i < ((double) par.N / 100) * par.threshold_under_which_two_to_one && par.beta != par.beta1) {
+        } else if (e < ((double) par.N / 100) * par.threshold_under_which_two_to_one && par.beta != par.beta1) {
             par.beta = par.beta1;
             std::cout << "beta increase at time t= " << temp.back() << "\n";
             time_lockdown.push_back(temp.back());
         }
 
-        //sumsHiH_nh gives some problems of approximation since it is a double, here i try to fix
+        //sumsHiH_nh gives some problems of approximation.
+        // since it is a double it may happen that it does not go to zero
+        // here i check if it should be zero
         if (sumsHiH_nh < (0.1/par.nh_max) || (i == 0 && s == 0)) {
             sumsHiH_nh = 0;
         }

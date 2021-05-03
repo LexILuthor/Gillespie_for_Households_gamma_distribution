@@ -333,7 +333,7 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
     double sumsHiH_nh = 0;
     int total_population = 0;
 
-    int n = 100;
+    int n = 50;
     double p = (double)par.nh_mean / n;
 
     std::binomial_distribution<int> bin_distribution(n, p);
@@ -346,7 +346,7 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
     //------------------------------------------------------------------------------------------------------------------
 
-    nh=par.nh_mean;
+    //nh=par.nh_mean;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -374,7 +374,7 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
         //------------------------------------------------------------------------------------------------------------------
 
-        nh=par.nh_mean;
+        //nh=par.nh_mean;
 
         //------------------------------------------------------------------------------------------------------------------
 
@@ -495,7 +495,7 @@ void write_lock_down_files(std::string outputpath, std::vector<double> &time_loc
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
     } else {
-        for (int i = 1; i < time_lockdown.size(); i++) {
+        for (int i = 0; i < time_lockdown.size(); i++) {
             if (i % 2 == 1) {
                 outfile << '\n';
             }
