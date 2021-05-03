@@ -54,6 +54,8 @@ public:
 
     double beta;
 
+    int number_of_vaccinated=12;
+
     std::default_random_engine generator;
 
     void initialize_generator(unsigned seed) {
