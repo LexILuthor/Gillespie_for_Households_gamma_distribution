@@ -336,17 +336,18 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
     int n = 50;
     double p = (double)par.nh_mean / n;
 
-    std::binomial_distribution<int> bin_distribution(n, p);
-    int nh = bin_distribution(par.generator);
+    //std::binomial_distribution<int> bin_distribution(n, p);
+    std::poisson_distribution<int> poiss_distribution(par.nh_mean);
+    int nh = poiss_distribution(par.generator);
 
     //make sure that nh is in (0,par.nh_max]
     while (nh > par.nh_max || nh <= 0) {
-        nh = bin_distribution(par.generator);
+        nh = poiss_distribution(par.generator);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    //nh=par.nh_mean;
+    nh=par.nh_mean;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -366,15 +367,15 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
     for (int z = 1; z < par.number_of_Households; z++) {
 
-        nh = bin_distribution(par.generator);
+        nh = poiss_distribution(par.generator);
         //make sure that nh is in (0,par.nh_max]
         while (nh > par.nh_max || nh <= 0) {
-            nh = bin_distribution(par.generator);
+            nh = poiss_distribution(par.generator);
         }
 
         //------------------------------------------------------------------------------------------------------------------
 
-        //nh=par.nh_mean;
+        nh=par.nh_mean;
 
         //------------------------------------------------------------------------------------------------------------------
 
