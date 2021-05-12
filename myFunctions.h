@@ -24,6 +24,10 @@ void new_Recovered(std::vector<std::vector<int> > &SEIR,
                    state_to_household_map &states_to_household,
                    double &sumsHiH_nh, parameter &par, int &j);
 
+void new_vacinated(std::vector<std::vector<int> > &SEIR,
+                   state_to_household_map &states_to_household,
+                   int &sumsHiH_nh, parameter &par, int &j);
+
 void initializeSEIRandTemp(std::vector<std::vector<int>> &SEIR, std::vector<double> &temp, int &N);
 
 void read_Parameters_From_File(std::string inputpath, parameter &parameters);
