@@ -1,9 +1,9 @@
-NumberOfSteps: 1000000
-number_of_Households: 200000
-maximum_number_of_people_in_one_Household: 4
-mean_number_of_people_in_one_household: 4
-Beta_1: 0.38
-Beta_2: 0.38
+NumberOfSteps: 500000000
+number_of_Households: 20000
+maximum_number_of_people_in_one_Household: 40
+mean_number_of_people_in_one_household: 40
+Beta_1: 0.125
+Beta_2: 0.125
 threshold_above_which_we_change_from_beta1_to_beta2: 3
 threshold_under_which_we_change_from_beta2_to_beta1: 0.1
 BetaH: 0.8
@@ -11,3 +11,4 @@ Ny: 1.0
 Gamma: 0.5
 number_of_infected_compartments: 2
 number_of_exposed_compartments: 2
+time_activate_lockdown: 20000

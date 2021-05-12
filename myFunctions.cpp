@@ -533,6 +533,12 @@ void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
         getline(infile, line);
         parameters.number_of_exposed_compartments = std::stod(line);
 
+
+        //time at which we activate the lockdown
+        getline(infile, line, ':');
+        getline(infile, line);
+        parameters.time_activate_lockdown = std::stod(line);
+
         infile.close();
     } else std::cout << "Unable to open file";
 }

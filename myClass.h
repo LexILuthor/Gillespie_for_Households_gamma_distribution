@@ -54,7 +54,11 @@ public:
 
     double beta;
 
-    int number_of_vaccinated=12;
+    //time at which activate the lockdown
+    double time_activate_lockdown;
+
+    //vaccinated
+    int number_of_vaccinated = 12;
 
     std::default_random_engine generator;
 
@@ -72,7 +76,8 @@ public:
     int dimension;
 
     house(int nh, int s, int e, int i, parameter par);
-    house(std::vector<int> &state_to_copy,int nh);
+
+    house(std::vector<int> &state_to_copy, int nh);
 };
 
 class state_to_household_map {

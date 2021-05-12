@@ -34,7 +34,7 @@ int main() {
 
     std::random_device myRandomDevice;
     //unsigned seed = myRandomDevice();
-    unsigned seed = 11;
+    unsigned seed = 1;
     par.initialize_generator(seed);
 
 
