@@ -57,6 +57,10 @@ public:
     //time at which activate the lockdown
     double time_activate_lockdown;
 
+
+    //time at which end the lockdown
+    double time_end_lockdown;
+
     //vaccinated
     int number_of_vaccinated = 12;
 

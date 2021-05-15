@@ -360,7 +360,7 @@ void new_vacinated(std::vector<std::vector<int> > &SEIR,
                         house selected_household = states_to_household.return_random_household_in_state(s, e, i, par);
                         selected_household.state[0]--;
 
-                        states_to_household.add_household(selected_household, s - 1, e , i);
+                        states_to_household.add_household(selected_household, s - 1, e, i);
 
                         // this is the rewrite of:
                         // sumsHiH = sumsHiH - (s * i)/nh + ((s - 1) * i )/nh
@@ -411,7 +411,7 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
     //------------------------------------------------------------------------------------------------------------------
 
-    nh=par.nh_mean;
+    nh = par.nh_mean;
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -439,7 +439,7 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
         //------------------------------------------------------------------------------------------------------------------
 
-        nh=par.nh_mean;
+        nh = par.nh_mean;
 
         //------------------------------------------------------------------------------------------------------------------
 
@@ -539,6 +539,12 @@ void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
         getline(infile, line);
         parameters.time_activate_lockdown = std::stod(line);
 
+
+        //time at which we end the lockdown
+        getline(infile, line, ':');
+        getline(infile, line);
+        parameters.time_end_lockdown = std::stod(line);
+
         infile.close();
     } else std::cout << "Unable to open file";
 }
@@ -548,9 +554,11 @@ void write_the_csv_file(std::string outputpath, std::vector<std::vector<int> > &
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
     } else {
+        double print_time = 0;
         for (int i = 0; i < temp.size(); i++) {
-            //write only every 20
-            if (i % 20 == 0) {
+            //write only every one unit of time
+            if (i >= print_time) {
+                print_time = print_time + 0.5;
                 outfile << SEIR[0][i] << ",\t" << SEIR[1][i] << ",\t" << SEIR[2][i] << ",\t" << SEIR[3][i] << ",\t"
                         << temp[i] << "\n";
             }
