@@ -1,4 +1,4 @@
-NumberOfSteps: 50
+NumberOfSteps: 500000
 number_of_Households: 1806510
 maximum_number_of_people_in_one_Household: 5
 mean_number_of_people_in_one_household: 5
