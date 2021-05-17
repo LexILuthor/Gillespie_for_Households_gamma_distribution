@@ -3,12 +3,12 @@ number_of_Households: 900000
 maximum_number_of_people_in_one_Household: 10
 mean_number_of_people_in_one_household: 10
 Beta_1: 0.8
-Beta_2: 0.017
+Beta_2: 0.004
 threshold_above_which_we_change_from_beta1_to_beta2: 3
 threshold_under_which_we_change_from_beta2_to_beta1: 0.1
-BetaH: 0.2727
+BetaH: 0.8
 Ny: 0.2
-Gamma: 0.5
+Gamma: 0.2
 number_of_infected_compartments: 2
 number_of_exposed_compartments: 2
 time_activate_lockdown: 63
