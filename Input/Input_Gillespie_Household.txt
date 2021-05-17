@@ -2,8 +2,8 @@ NumberOfSteps: 500000
 number_of_Households: 900000
 maximum_number_of_people_in_one_Household: 10
 mean_number_of_people_in_one_household: 10
-Beta_1: 0.8
-Beta_2: 0.004
+Beta_1: 0.45
+Beta_2: 0.005
 threshold_above_which_we_change_from_beta1_to_beta2: 3
 threshold_under_which_we_change_from_beta2_to_beta1: 0.1
 BetaH: 0.8
