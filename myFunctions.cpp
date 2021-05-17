@@ -557,8 +557,8 @@ void write_the_csv_file(std::string outputpath, std::vector<std::vector<int> > &
         double print_time = 0;
         for (int i = 0; i < temp.size(); i++) {
             //write only every one unit of time
-            if (i >= print_time) {
-                print_time = print_time + 0.5;
+            if (temp[i] >= print_time) {
+                print_time = print_time + 1;
                 outfile << SEIR[0][i] << ",\t" << SEIR[1][i] << ",\t" << SEIR[2][i] << ",\t" << SEIR[3][i] << ",\t"
                         << temp[i] << "\n";
             }

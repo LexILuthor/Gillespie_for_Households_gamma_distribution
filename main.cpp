@@ -17,7 +17,7 @@ int main() {
     std::string outputpath = "../Output/gillespie_Household";
 
 
-    int tot_simulations = 20;
+    int tot_simulations = 2;
 
     parameter par;
     read_Parameters_From_File(inputpath, par);
