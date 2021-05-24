@@ -17,7 +17,7 @@ int main() {
     std::string outputpath = "../Output/gillespie_Household";
 
 
-    int tot_simulations = 5;
+    int tot_simulations = 1;
 
     parameter par;
     read_Parameters_From_File(inputpath, par);
@@ -34,7 +34,7 @@ int main() {
 
     std::random_device myRandomDevice;
     //unsigned seed = myRandomDevice();
-    unsigned seed = 0;
+    unsigned seed = 334;
     par.initialize_generator(seed);
 
 

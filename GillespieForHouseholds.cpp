@@ -52,6 +52,10 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
     int j = 1;
     while (j < par.nSteps) {
 
+        if (j%1000==0){
+            std::cout<<j<<std::endl;
+        }
+
         //number of Susceptible
         int s = SEIR[0][j - 1];
 
