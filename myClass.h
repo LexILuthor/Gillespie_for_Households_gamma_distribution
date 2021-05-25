@@ -27,8 +27,11 @@ public:
     //S->E the initial beta
     double beta1;
 
-    //S->E after the lockdown (automatically activated when a certain % of the population is recovered)
+    //S->E before the lockdown (automatically activated when a certain % of the population is recovered)
     double beta2;
+
+    //S->E after the lockdown
+    double beta3;
 
     //the % above which the general contacts happens at ratio beta2
     double threshold_above_which_one_to_two;

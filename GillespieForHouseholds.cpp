@@ -79,7 +79,7 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
             par.beta=par.beta2;
         }
         if (temp[j-1]>par.time_end_lockdown){
-            par.beta = par.beta1;
+            par.beta = par.beta3;
         }
 
 

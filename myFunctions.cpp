@@ -495,6 +495,11 @@ void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
         getline(infile, line);
         parameters.beta2 = std::stod(line);
 
+        //beta3 is the third beta after the end of the lockdown
+        getline(infile, line, ':');
+        getline(infile, line);
+        parameters.beta3 = std::stod(line);
+
         //
         getline(infile, line, ':');
         getline(infile, line);
