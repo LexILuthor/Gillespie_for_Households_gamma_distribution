@@ -31,20 +31,26 @@ int main() {
     }
 
 
-
     std::random_device myRandomDevice;
     //unsigned seed = myRandomDevice();
-    unsigned seed = 343;
+    unsigned seed = 350;
     //337 gives gut results
     //339 also
     par.initialize_generator(seed);
 
-
+    std::vector<int> households_dimensions{3, 4, 5, 9, 10, 15, 19, 25, 30, 40};
+    int simulations_per_household = 20;
+    par.N = 342000;
 
     // Gillespie algorithm.
     // SEIR is a matrix that contains the data relative to the number of infected recovred etc..
     // tmp is the vector of the time (each entry is the time at which an event occurred)
     for (int i = 0; i < tot_simulations; i++) {
+        int household_index = i / simulations_per_household;
+        par.nh_max = households_dimensions[household_index];
+        par.nh_mean = households_dimensions[household_index];
+        par.number_of_Households = par.N / households_dimensions[household_index];
+
         std::vector<double> tempo;
         std::vector<double> time_lockdown;
         std::vector<std::vector<int> > SEIR = gillespie_for_Households(par, tempo,

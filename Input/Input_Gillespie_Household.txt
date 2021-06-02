@@ -1,13 +1,13 @@
-NumberOfSteps: 500000
+NumberOfSteps: 900000
 number_of_Households: 900000
 maximum_number_of_people_in_one_Household: 7
 mean_number_of_people_in_one_household: 7
-Beta_1: 0.25
-Beta_2: 0.004
+Beta_1: 0.28
+Beta_2: 0.005
 Beta_3: 0.0001
 threshold_above_which_we_change_from_beta1_to_beta2: 3
 threshold_under_which_we_change_from_beta2_to_beta1: 0.1
-BetaH: 0.5
+BetaH: 0.28
 Ny: 0.42
 Gamma: 0.1
 number_of_infected_compartments: 2
