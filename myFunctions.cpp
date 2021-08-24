@@ -554,7 +554,8 @@ void read_Parameters_From_File(std::string inputpath, parameter &parameters) {
     } else std::cout << "Unable to open file";
 }
 
-void write_the_csv_file(const std::string& outputpath, std::vector<std::vector<int> > &SEIR, std::vector<double> &temp) {
+void
+write_the_csv_file(const std::string &outputpath, std::vector<std::vector<int> > &SEIR, std::vector<double> &temp) {
     std::ofstream outfile(outputpath);
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
@@ -575,20 +576,22 @@ void write_the_csv_file(const std::string& outputpath, std::vector<std::vector<i
 
 
 void
-write_daily_new_infected_file(const std::string& outputpath, std::vector<std::vector<int> > &SEIR, std::vector<double> &temp) {
+write_daily_new_infected_file(const std::string &outputpath, std::vector<std::vector<int> > &SEIR,
+                              std::vector<double> &temp) {
     std::ofstream outfile("daily_infected" + outputpath);
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
     } else {
         double print_time = 0;
         int new_infected = 0;
-        for (double i : temp) {
-            if (i >= print_time + 1) {
+        for (int i = 1; i < temp.size(); i++) {
+            if (temp[i] >= print_time + 1) {
                 outfile << new_infected << ",\t" << print_time << "\n";
                 new_infected = 0;
                 print_time = print_time + 1;
             } else {
-                new_infected++;
+                if (SEIR[2][i] > SEIR[2][i - 1])
+                    new_infected++;
             }
 
         }
@@ -597,7 +600,7 @@ write_daily_new_infected_file(const std::string& outputpath, std::vector<std::ve
 }
 
 
-void write_lock_down_files(const std::string& outputpath, std::vector<double> &time_lockdown) {
+void write_lock_down_files(const std::string &outputpath, std::vector<double> &time_lockdown) {
     std::ofstream outfile(outputpath);
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
