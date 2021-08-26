@@ -49,11 +49,17 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
     double move = (double) 1 / par.N;
 
     // here we simulate the process
+    int daily_infected = 0;
+    int epidemic_day = 0;
+    bool sync_day_reaced = false;
+    int lockdown_day = 9999999;
+
+
     int j = 1;
     while (j < par.nSteps) {
 
-        if (j%1000==0){
-            std::cout<<j<<std::endl;
+        if (j % 1000 == 0) {
+            std::cout << j << std::endl;
         }
 
         //number of Susceptible
@@ -74,13 +80,29 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
             return SEIR;
         }
 
+        if (temp[j - 1] > epidemic_day) {
+            epidemic_day++;
+            daily_infected = 0;
+        }
+
+
+        //activate lockdown par.lockdown_delay days after we reach par.daily_infected_sync new daily infected
+        if (!sync_day_reaced && daily_infected > par.daily_infected_sync) {
+            sync_day_reaced = true;
+            lockdown_day = int(temp[j - 1] + par.lockdown_delay);
+        }
+        if (sync_day_reaced && temp[j - 1] > lockdown_day) {
+            par.beta = par.beta2;
+        }
+
+
         //activate lockdown at time par.time_activate_lockdown
-        if (temp[j-1]>par.time_activate_lockdown){
-            par.beta=par.beta2;
-        }
-        if (temp[j-1]>par.time_end_lockdown){
-            par.beta = par.beta3;
-        }
+        //if (temp[j - 1] > par.time_activate_lockdown) {
+        //    par.beta = par.beta2;
+        //}
+        //if (temp[j - 1] > par.time_end_lockdown) {
+        //    par.beta = par.beta3;
+        //}
 
 
         //change beta when we have threshold_above_which_one_to_two % of the population infected
@@ -100,7 +122,7 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
         //sumsHiH_nh gives some problems of approximation.
         // since it is a double it may happen that it does not go to zero
         // here i check if it should be zero
-        if (sumsHiH_nh < (0.1/par.nh_max) || (i == 0 && s == 0)) {
+        if (sumsHiH_nh < (0.1 / par.nh_max) || (i == 0 && s == 0)) {
             sumsHiH_nh = 0;
         }
 
@@ -148,10 +170,18 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
                                              par, j);
         } else if (tmp < (se + seH + ei)) {
             //new infected
+
+
+            double tmp_SumsHiH;
             new_Infected(SEIR,
                          states_to_household,
                          sumsHiH_nh,
                          par, j);
+            if (tmp_SumsHiH != sumsHiH_nh) {
+                //if sumsHiH has changes it means we actually have a new infected
+                daily_infected++;
+            }
+
         } else {
             //new Recovered
             new_Recovered(SEIR,

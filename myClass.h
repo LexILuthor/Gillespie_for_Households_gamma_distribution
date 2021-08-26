@@ -67,6 +67,13 @@ public:
     //vaccinated
     int number_of_vaccinated = 12;
 
+
+    //number of daily infected at which we want to synchronize our graphs
+    int daily_infected_sync = 1000;
+
+    //number of days after synchronization day ath which we start lockdown
+    int lockdown_delay = 8;
+
     std::default_random_engine generator;
 
     void initialize_generator(unsigned seed) {
