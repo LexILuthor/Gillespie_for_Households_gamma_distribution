@@ -606,7 +606,7 @@ write_daily_new_infected_file(const std::string &outputpath, std::vector<std::ve
     }
 
 
-    std::ofstream outfile("daily_infected" + outputpath);
+    std::ofstream outfile(outputpath);
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
     } else {

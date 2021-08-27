@@ -34,7 +34,7 @@ int main() {
 
     std::random_device myRandomDevice;
     //unsigned seed = myRandomDevice();
-    unsigned seed = 343;
+    unsigned seed = 3;
     //337 gives gut results
     //339 also
     par.initialize_generator(seed);
@@ -54,7 +54,7 @@ int main() {
             write_lock_down_files(outputpath + std::to_string(i) + "lock_down_time" + ".txt", time_lockdown);
         }
         write_the_csv_file(outputpath + std::to_string(i) + ".csv", SEIR, tempo);
-        write_daily_new_infected_file(outputpath + std::to_string(i) + ".csv", SEIR, tempo, par);
+        write_daily_new_infected_file(outputpath + std::to_string(i) + "daily_infected.csv", SEIR, tempo, par);
         std::cout << i << "\n";
     }
     return 0;
