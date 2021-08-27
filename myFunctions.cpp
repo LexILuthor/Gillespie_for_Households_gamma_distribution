@@ -577,22 +577,42 @@ write_the_csv_file(const std::string &outputpath, std::vector<std::vector<int> >
 
 void
 write_daily_new_infected_file(const std::string &outputpath, std::vector<std::vector<int> > &SEIR,
-                              std::vector<double> &temp) {
+                              std::vector<double> &temp, parameter &par) {
+    std::vector<int> daily_infected;
+    std::vector<int> day;
+
+
+    double print_time = 0;
+    int new_infected = 0;
+    for (int i = 1; i < temp.size(); i++) {
+        if (temp[i] >= print_time + 1) {
+            daily_infected.push_back(new_infected);
+            day.push_back(print_time);
+            new_infected = 0;
+            print_time = print_time + 1;
+        } else {
+            if (SEIR[2][i] > SEIR[2][i - 1])
+                new_infected++;
+        }
+
+    }
+    int shift_days = 0;
+    for (int i; i < day.size(); i++) {
+        if (daily_infected[i] > par.daily_infected_sync) {
+            int present_day = par.synchronization_day - par.lockdown_delay;
+            shift_days = day[i] - present_day;
+            break;
+        }
+    }
+
+
     std::ofstream outfile("daily_infected" + outputpath);
     if (!outfile.is_open()) {
         std::cout << "Unable to open file";
     } else {
-        double print_time = 0;
-        int new_infected = 0;
-        for (int i = 1; i < temp.size(); i++) {
-            if (temp[i] >= print_time + 1) {
-                outfile << new_infected << ",\t" << print_time << "\n";
-                new_infected = 0;
-                print_time = print_time + 1;
-            } else {
-                if (SEIR[2][i] > SEIR[2][i - 1])
-                    new_infected++;
-            }
+        for (int i = 1; i < day.size(); i++) {
+
+            outfile << daily_infected[i] << ",\t" << day[i] - shift_days << "\n";
 
         }
         outfile.close();

@@ -32,9 +32,9 @@ void initializeSEIRandTemp(std::vector<std::vector<int>> &SEIR, std::vector<doub
 
 void read_Parameters_From_File(std::string inputpath, parameter &parameters);
 
-void write_the_csv_file(const std::string& outputpath, std::vector<std::vector<int> > &SEIR, std::vector<double> &temp);
+void write_the_csv_file(const std::string &outputpath, std::vector<std::vector<int> > &SEIR, std::vector<double> &temp);
 
-void write_lock_down_files(const std::string& outputpath, std::vector<double> &time_lockdown);
+void write_lock_down_files(const std::string &outputpath, std::vector<double> &time_lockdown);
 
 void initialize_household_with_Susceptible_Infected_Exposed(
         std::vector<std::vector<std::vector<int>>> &household_with_Susceptible_Infected_Exposed,
@@ -44,6 +44,6 @@ double initialize_Households(parameter &par, state_to_household_map &states_to_h
 
 
 void write_daily_new_infected_file(const std::string &outputpath, std::vector<std::vector<int> > &SEIR,
-                                   std::vector<double> &temp);
+                                   std::vector<double> &temp, parameter &par);
 
 double generateUnif_from_zeroExcluded_to(double to, parameter &par);

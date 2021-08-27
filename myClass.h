@@ -74,6 +74,8 @@ public:
     //number of days after synchronization day ath which we start lockdown
     int lockdown_delay = 8;
 
+    int synchronization_day = 36;
+
     std::default_random_engine generator;
 
     void initialize_generator(unsigned seed) {
