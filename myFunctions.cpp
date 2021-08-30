@@ -564,7 +564,7 @@ write_the_csv_file(const std::string &outputpath, std::vector<std::vector<int> >
         for (int i = 0; i < temp.size(); i++) {
             //write only every one unit of time
             if (temp[i] >= print_time) {
-                print_time = print_time + 1;
+                print_time = floor(temp[i]) + 1;
                 outfile << SEIR[0][i] << ",\t" << SEIR[1][i] << ",\t" << SEIR[2][i] << ",\t" << SEIR[3][i] << ",\t"
                         << temp[i] << "\n";
             }
@@ -589,17 +589,21 @@ write_daily_new_infected_file(const std::string &outputpath, std::vector<std::ve
             daily_infected.push_back(new_infected);
             day.push_back(print_time);
             new_infected = 0;
-            print_time = print_time + 1;
-        } else {
-            if (SEIR[2][i] > SEIR[2][i - 1])
+            if (SEIR[2][i] > SEIR[2][i - 1]) {
                 new_infected++;
+            }
+            print_time = floor(temp[i]) + 1;
+        } else {
+            if (SEIR[2][i] > SEIR[2][i - 1]) {
+                new_infected++;
+            }
         }
 
     }
     int shift_days = 0;
     for (int i; i < day.size(); i++) {
         if (daily_infected[i] > par.daily_infected_sync) {
-            int present_day = par.synchronization_day - par.lockdown_delay;
+            int present_day = par.synchronization_day;
             shift_days = day[i] - present_day;
             break;
         }

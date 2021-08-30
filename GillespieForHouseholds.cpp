@@ -81,10 +81,13 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
         }
 
         if (temp[j - 1] > epidemic_day) {
-            epidemic_day++;
-            std::cout << "daily infected: " << daily_infected << "\n";
+            epidemic_day = floor(temp[j - 1]) + 1;
+            //std::cout << "daily infected: " << daily_infected << "\n";
             daily_infected = 0;
         }
+
+
+
 
 
         //activate lockdown par.lockdown_delay days after we reach par.daily_infected_sync new daily infected
