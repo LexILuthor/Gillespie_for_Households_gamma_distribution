@@ -178,7 +178,7 @@ gillespie_for_Households(parameter &par, std::vector<double> &temp, std::vector<
             //new infected
 
 
-            double tmp_SumsHiH;
+            double tmp_SumsHiH = sumsHiH_nh;
             new_Infected(SEIR,
                          states_to_household,
                          sumsHiH_nh,
